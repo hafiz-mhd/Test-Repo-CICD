@@ -1,0 +1,84 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_CREDENTIALS_ID = 'docker-cred'
+        DOCKER_IMAGE          = 'hafizmhd/ci-cd' // Format: username/maker
+        SONAR_SERVER_NAME     = 'sonarqube_env' 
+        SONAR_SCANNER_TOOL    = 'sonar-scanner'     
+        GIT_CREDENTIALS_ID    = 'github-cred'
+        MANIFEST_REPO         = 'https://github.com/hafiz-mhd/Test-Repo-CICD.git'
+        MANIFEST_BRANCH       = 'main'
+    }
+
+    stages {
+        stage('Checkout Source Code') {
+            steps {
+                echo "passed"
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    def scannerHome = tool "${SONAR_SCANNER_TOOL}"
+                    withSonarQubeEnv("${SONAR_SERVER_NAME}") {
+                        sh "${scannerHome}/bin/sonar-scanner \
+                            -Dsonar.projectKey=CI-CD-key \
+                            -Dsonar.projectName='CI-CD' \
+                            -Dsonar.sources=."
+                    }
+                }
+            }
+        }
+
+        stage('Build & Post Docker Image') {
+    steps {
+        script {
+            withCredentials([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                sh """
+                    echo "\$DOCKER_PASS" | docker login -u "\$DOCKER_USER" --password-stdin
+                    
+                    docker build -t ${DOCKER_IMAGE}:${env.BUILD_NUMBER} -t ${DOCKER_IMAGE}:latest -f maker/Dockerfile maker
+                    
+                    docker push ${DOCKER_IMAGE}:${env.BUILD_NUMBER}
+                    docker push ${DOCKER_IMAGE}:latest
+                """
+            }
+        }
+    }
+}
+
+       stage('Update Manifest Repo') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'github-cred', usernameVariable: 'GH_USER', passwordVariable: 'GH_TOKEN')]) {
+                    sh """
+                        # Configure remote URL with properly escaped variables for pushing
+                        git remote set-url origin https://\${GH_USER}:\${GH_TOKEN}@github.com/hafiz-mhd/Test-Repo-CICD.git
+
+                        # Ensure we are on main branch and up to date
+                        git checkout main
+                        git pull --rebase origin main
+
+                        # Perform sed update (note the space after 'image:')
+                        sed -i '/name: maker/{n;s|image:.*|image: hafizmhd/ci-cd:${env.BUILD_NUMBER}|}' CI-CD test/manifests/deployment.yaml
+
+                        # Commit and push changes
+                        git config user.name "hafiz-mhd"
+                        git config user.email "hafizmuhammedar123@gmail.com"
+                        git commit -am "chore(manifest): update CI-CD image tag to ${env.BUILD_NUMBER} [skip ci]"
+                        git push origin main
+                    """
+                }
+            }
+        }
+    }
+    post {
+        success {
+            echo 'Pipeline executed successfully! Manifest repo updated with new image tag.'
+        }
+        failure {
+            echo 'Pipeline failed. Please review the stage logs above.'
+        }
+    }
+}

@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>deploy to aws</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Particle Background -->
+  <canvas id="particle-canvas"></canvas>
+
+  <!-- Navigation / Header -->
+  <header>
+    <div class="logo-section">
+      <div class="logo-icon">AWS</div>
+      <div class="logo-text">
+        <h1>Deploy to aws</h1>
+      </div>
+    </div>
+    
+  </header>
+
+  <!-- Main Topology Dashboard -->
+  <main class="dashboard">
+
+    <!-- Topology Visualizer Container -->
+    <section class="glass-card visualizer-container">
+      <div class="panel-header">
+        <div>
+          <h2>Infrastructure</h2>
+          <span class="subtitle">Click the AWS Central Hub to ping nodes & clusters</span>
+        </div>
+        <span class="subtitle" id="active-packets-count">Active Flows: 0</span>
+      </div>
+
+      <div class="simulation-space" id="simulation-space">
+        <!-- Floating Clouds (Moving Objects 1) -->
+        <div class="floating-cloud-container">
+          <svg class="cloud-object c1" width="120" height="80" viewBox="0 0 100 100" fill="currentColor">
+            <path d="M70,40 C70,30 60,20 45,20 C35,20 27,27 25,36 C22,34 18,33 15,33 C7,33 0,40 0,48 C0,56 7,63 15,63 L70,63 C78,63 85,56 85,48 C85,40 78,40 70,40 Z" />
+          </svg>
+          <svg class="cloud-object c2" width="140" height="90" viewBox="0 0 100 100" fill="currentColor">
+            <path d="M70,40 C70,30 60,20 45,20 C35,20 27,27 25,36 C22,34 18,33 15,33 C7,33 0,40 0,48 C0,56 7,63 15,63 L70,63 C78,63 85,56 85,48 C85,40 78,40 70,40 Z" />
+          </svg>
+          <svg class="cloud-object c3" width="90" height="60" viewBox="0 0 100 100" fill="currentColor">
+            <path d="M70,40 C70,30 60,20 45,20 C35,20 27,27 25,36 C22,34 18,33 15,33 C7,33 0,40 0,48 C0,56 7,63 15,63 L70,63 C78,63 85,56 85,48 C85,40 78,40 70,40 Z" />
+          </svg>
+          <svg class="cloud-object c4" width="100" height="70" viewBox="0 0 100 100" fill="currentColor">
+            <path d="M70,40 C70,30 60,20 45,20 C35,20 27,27 25,36 C22,34 18,33 15,33 C7,33 0,40 0,48 C0,56 7,63 15,63 L70,63 C78,63 85,56 85,48 C85,40 78,40 70,40 Z" />
+          </svg>
+        </div>
+
+        <!-- Floating Server Racks (Moving Objects 2) -->
+        <div class="rack-object r1" id="rack-west">
+          <div class="rack-indicator"></div>
+          <div class="rack-leds">
+            <span class="led active"></span>
+            <span class="led active"></span>
+            <span class="led"></span>
+          </div>
+          <div style="font-size: 0.55rem; text-align: center; color: var(--text-muted); margin-top: 4px; font-family: var(--font-mono)">US-WEST</div>
+        </div>
+
+        <div class="rack-object r2" id="rack-east">
+          <div class="rack-indicator"></div>
+          <div class="rack-leds">
+            <span class="led active"></span>
+            <span class="led"></span>
+            <span class="led active"></span>
+          </div>
+          <div style="font-size: 0.55rem; text-align: center; color: var(--text-muted); margin-top: 4px; font-family: var(--font-mono)">US-EAST</div>
+        </div>
+
+        <!-- Orbital Nodes (Moving Objects 3) -->
+        <div class="orbit-system">
+          <!-- Outer Orbit (Cyan Theme) -->
+          <div class="orbit-ring outer">
+            <div class="node-satellite" data-node="CloudFront Edge (Tokyo)" data-latency="18ms" data-load="12%"></div>
+            <div class="node-satellite" data-node="CloudFront Edge (London)" data-latency="42ms" data-load="8%"></div>
+          </div>
+
+          <!-- Middle Orbit (Purple Theme) -->
+          <div class="orbit-ring middle">
+            <div class="node-satellite" data-node="EC2 Auto Scaling Group" data-latency="5ms" data-load="24%"></div>
+            <div class="node-satellite" data-node="ECS Container Cluster" data-latency="7ms" data-load="40%"></div>
+          </div>
+
+          <!-- Inner Orbit (AWS Orange Theme) -->
+          <div class="orbit-ring inner">
+            <div class="node-satellite" data-node="Amazon RDS Multi-AZ" data-latency="3ms" data-load="18%"></div>
+          </div>
+
+          <!-- Central AWS Hub -->
+          <div class="central-hub" id="aws-hub">
+            <svg viewBox="0 0 100 100">
+              <path d="M50 15 C33.4 15 20 28.4 20 45 C20 56.6 26.6 66.6 36.4 71.6 C37.8 72.3 39 71.2 39 69.8 L39 63.9 C28 66.3 25.6 58.7 25.6 58.7 C23.8 54.1 21.2 52.9 21.2 52.9 C17.6 50.4 21.5 50.5 21.5 50.5 C25.5 50.8 27.6 54.6 27.6 54.6 C31.1 60.7 36.9 58.9 39.2 57.9 C39.6 55.3 40.6 53.6 41.7 52.6 C32.9 51.6 23.7 48.2 23.7 33 C23.7 28.7 25.2 25.1 27.8 22.3 C27.4 21.3 26 17.3 28.2 11.9 C28.2 11.9 31.5 10.8 39.1 16 C42.2 15.1 45.6 14.7 49 14.7 C52.4 14.7 55.8 15.1 58.9 16 C66.5 10.8 69.8 11.9 69.8 11.9 C72 17.3 70.6 21.3 70.2 22.3 C72.8 25.1 74.3 28.7 74.3 33 C74.3 48.3 65 51.6 56.2 52.6 C57.6 53.8 58.8 56.2 58.8 59.9 L58.8 69.8 C58.8 71.2 60 72.3 61.4 71.6 C71.2 66.6 77.8 56.6 77.8 45 C77.8 28.4 64.4 15 47.8 15 Z" fill="var(--aws-orange)"/>
+              <path d="M30 78 C42 84 58 84 70 78 C72 77 74 79 73 81 C64 87 36 87 27 81 C26 79 28 77 30 78 Z" fill="var(--aws-orange)" />
+              <path d="M72 82 L76 76 L78 83 Z" fill="var(--aws-orange)" />
+            </svg>
+            <span>AWS CLOUD</span>
+          </div>
+        </div>
+
+        <!-- Dynamic Tooltip -->
+        <div id="tooltip" class="node-tooltip">
+          <div class="tooltip-title" id="tooltip-title">Node Info</div>
+          <div class="tooltip-row">
+            <span>Latency:</span>
+            <span class="tooltip-val" id="tooltip-latency">--</span>
+          </div>
+          <div class="tooltip-row">
+            <span>Load:</span>
+            <span class="tooltip-val" id="tooltip-load">--</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>Developed with Vanilla CSS & Canvas Particles</p>
+  </footer>
+
+  <script>
+    // Particle Canvas Animation
+    const canvas = document.getElementById('particle-canvas');
+    const ctx = canvas.getContext('2d');
+
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    class Particle {
+      constructor() {
+        this.reset();
+      }
+
+      reset() {
+        this.x = Math.random() * width;
+        this.y = height + Math.random() * 100;
+        this.size = Math.random() * 2.5 + 0.5;
+        this.speedY = Math.random() * -1.2 - 0.4;
+        this.speedX = Math.random() * 0.6 - 0.3;
+        this.color = Math.random() > 0.5 ? 'rgba(0, 240, 255, 0.25)' : 'rgba(188, 58, 255, 0.2)';
+        this.pulse = Math.random() * Math.PI;
+      }
+
+      update() {
+        this.y += this.speedY;
+        this.x += this.speedX;
+        this.pulse += 0.02;
+
+        if (this.y < -20 || this.x < -20 || this.x > width + 20) {
+          this.reset();
+        }
+      }
+
+      draw() {
+        const sizeWithPulse = this.size * (1 + Math.sin(this.pulse) * 0.3);
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, sizeWithPulse, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+      }
+    }
+
+    const particles = Array.from({ length: 60 }, () => new Particle());
+
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // Data Flow Packet Canvas over Topology (Simulation space coordinates)
+    const simSpace = document.getElementById('simulation-space');
+    const activePacketsSpan = document.getElementById('active-packets-count');
+    let dataPackets = [];
+
+    function spawnDataPacket(fromEl, toEl, color = 'var(--cyan)') {
+      const fromRect = fromEl.getBoundingClientRect();
+      const toRect = toEl.getBoundingClientRect();
+      const simRect = simSpace.getBoundingClientRect();
+
+      const packet = document.createElement('div');
+      packet.style.position = 'absolute';
+      packet.style.width = '6px';
+      packet.style.height = '6px';
+      packet.style.borderRadius = '50%';
+      packet.style.backgroundColor = color;
+      packet.style.boxShadow = `0 0 8px ${color}`;
+      packet.style.zIndex = '4';
+      packet.style.pointerEvents = 'none';
+
+      const startX = (fromRect.left + fromRect.width / 2) - simRect.left;
+      const startY = (fromRect.top + fromRect.height / 2) - simRect.top;
+      const endX = (toRect.left + toRect.width / 2) - simRect.left;
+      const endY = (toRect.top + toRect.height / 2) - simRect.top;
+
+      packet.style.left = `${startX}px`;
+      packet.style.top = `${startY}px`;
+      simSpace.appendChild(packet);
+
+      const duration = 1200; // ms
+      const startTime = performance.now();
+
+      function move(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+
+        // Ease-in-out quadratic
+        const ease = progress < 0.5 ? 2 * progress * progress : -1 + (4 - 2 * progress) * progress;
+
+        const currentX = startX + (endX - startX) * ease;
+        const currentY = startY + (endY - startY) * ease;
+
+        packet.style.left = `${currentX}px`;
+        packet.style.top = `${currentY}px`;
+
+        if (progress < 1) {
+          requestAnimationFrame(move);
+        } else {
+          packet.remove();
+          dataPackets = dataPackets.filter(p => p !== packet);
+          activePacketsSpan.textContent = `Active Flows: ${dataPackets.length}`;
+        }
+      }
+
+      dataPackets.push(packet);
+      activePacketsSpan.textContent = `Active Flows: ${dataPackets.length}`;
+      requestAnimationFrame(move);
+    }
+
+    // Auto spawn random low traffic data flows
+    let autoFlowInterval = setInterval(() => {
+      if (Math.random() > 0.4) {
+        const racks = [document.getElementById('rack-west'), document.getElementById('rack-east')];
+        const randomRack = racks[Math.floor(Math.random() * racks.length)];
+        const satellites = document.querySelectorAll('.node-satellite');
+        const randomSat = satellites[Math.floor(Math.random() * satellites.length)];
+        
+        // Flow rack -> satellite -> hub
+        spawnDataPacket(randomRack, randomSat, 'var(--purple)');
+        setTimeout(() => {
+          spawnDataPacket(randomSat, document.getElementById('aws-hub'), 'var(--cyan)');
+        }, 600);
+      }
+    }, 2000);
+
+    // Interactive Satellites (Tooltip)
+    const satellites = document.querySelectorAll('.node-satellite');
+    const tooltip = document.getElementById('tooltip');
+    const tooltipTitle = document.getElementById('tooltip-title');
+    const tooltipLatency = document.getElementById('tooltip-latency');
+    const tooltipLoad = document.getElementById('tooltip-load');
+
+    satellites.forEach(sat => {
+      sat.addEventListener('mouseenter', (e) => {
+        const name = sat.getAttribute('data-node');
+        const latency = sat.getAttribute('data-latency');
+        const load = sat.getAttribute('data-load');
+
+        tooltipTitle.textContent = name;
+        tooltipLatency.textContent = latency;
+        tooltipLoad.textContent = load;
+
+        tooltip.classList.add('visible');
+      });
+
+      sat.addEventListener('mousemove', (e) => {
+        const simRect = simSpace.getBoundingClientRect();
+        const mouseX = e.clientX - simRect.left;
+        const mouseY = e.clientY - simRect.top;
+
+        tooltip.style.left = `${mouseX + 15}px`;
+        tooltip.style.top = `${mouseY + 15}px`;
+      });
+
+      sat.addEventListener('mouseleave', () => {
+        tooltip.classList.remove('visible');
+      });
+    });
+
+    // Central Hub Interaction: Click triggers a global ping burst
+    const awsHub = document.getElementById('aws-hub');
+    const systemBadge = document.getElementById('system-badge');
+    const systemStatusText = document.getElementById('system-status-text');
+    const systemDot = document.getElementById('system-dot');
+    let pingTimeout = null;
+
+    awsHub.addEventListener('click', () => {
+      // Trigger ripple/glow on hub
+      awsHub.style.transform = 'scale(1.15)';
+      setTimeout(() => { awsHub.style.transform = ''; }, 300);
+
+      // Flash badge status
+      if (pingTimeout) clearTimeout(pingTimeout);
+      if (systemStatusText) systemStatusText.textContent = 'Pinging Topology Nodes...';
+      if (systemBadge) {
+        systemBadge.style.background = 'rgba(0, 240, 255, 0.08)';
+        systemBadge.style.borderColor = 'rgba(0, 240, 255, 0.2)';
+      }
+      if (systemDot) {
+        systemDot.style.backgroundColor = 'var(--cyan)';
+        systemDot.style.boxShadow = '0 0 8px var(--cyan)';
+      }
+
+      // Spawning burst packets from all satellites to AWS hub and vice versa
+      const racks = [document.getElementById('rack-west'), document.getElementById('rack-east')];
+      
+      satellites.forEach((sat, index) => {
+        setTimeout(() => {
+          // Packet from rack to satellite
+          const randomRack = racks[Math.floor(Math.random() * racks.length)];
+          spawnDataPacket(randomRack, sat, 'var(--purple)');
+          
+          // Packet from satellite to hub
+          setTimeout(() => {
+            spawnDataPacket(sat, awsHub, 'var(--aws-orange)');
+          }, 400);
+        }, index * 100);
+      });
+
+      pingTimeout = setTimeout(() => {
+        if (systemStatusText) systemStatusText.textContent = 'AWS Environment Active';
+        if (systemBadge) {
+          systemBadge.style.background = 'rgba(16, 185, 129, 0.08)';
+          systemBadge.style.borderColor = 'rgba(16, 185, 129, 0.2)';
+        }
+        if (systemDot) {
+          systemDot.style.backgroundColor = 'var(--green)';
+          systemDot.style.boxShadow = '0 0 8px var(--green)';
+        }
+      }, 2500);
+    });
+
+  </script>
+</body>
+</html>
