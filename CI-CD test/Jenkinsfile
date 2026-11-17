@@ -61,7 +61,7 @@ pipeline {
                         git pull --rebase origin main
 
                         # Perform sed update (note the space after 'image:')
-                        sed -i '/name: maker/{n;s|image:.*|image: hafizmhd/ci-cd:${env.BUILD_NUMBER}|}' CI-CD test/manifests/deployment.yaml
+                        sed -i '/name: maker/{n;s|image:.*|image: ${DOCKER_IMAGE}:${env.BUILD_NUMBER}|;}' \"CI-CD test/manifests/deployment.yaml"
 
                         # Commit and push changes
                         git config user.name "hafiz-mhd"
