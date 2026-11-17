@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKER_CREDENTIALS_ID = 'docker-cred'
-        DOCKER_IMAGE          = 'hafizmhd/CI-CD test' // Format: username/maker
+        DOCKER_IMAGE          = 'hafizmhd/ci-cd' // Format: username/maker
         SONAR_SERVER_NAME     = 'sonarqube_env' 
         SONAR_SCANNER_TOOL    = 'sonar-scanner'     
         GIT_CREDENTIALS_ID    = 'github-cred'
@@ -61,7 +61,7 @@ pipeline {
                         git pull --rebase origin main
 
                         # Perform sed update (note the space after 'image:')
-                        sed -i '/name: maker/{n;s|image:.*|image: hafizmhd/CI-CD test:${env.BUILD_NUMBER}|}' CI-CD test/manifests/deployment.yaml
+                        sed -i '/name: maker/{n;s|image:.*|image: hafizmhd/ci-cd:${env.BUILD_NUMBER}|}' CI-CD test/manifests/deployment.yaml
 
                         # Commit and push changes
                         git config user.name "hafiz-mhd"
